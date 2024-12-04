@@ -1,0 +1,18 @@
+{
+  "con": {
+    "name": "con",
+    "status": "alive",
+    "level": 32,
+    "class": "Warlock",
+    "race": "Gnome",
+    "levelingZone": null
+  },
+  "test": {
+    "name": "test",
+    "status": "alive",
+    "level": 22,
+    "class": "Warrior",
+    "race": "Human",
+    "levelingZone": null
+  }
+}

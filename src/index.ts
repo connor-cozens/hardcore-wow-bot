@@ -1,8 +1,18 @@
 import { Client, GatewayIntentBits, Events, TextChannel, Interaction, AutocompleteInteraction, ChatInputCommandInteraction, InteractionType } from 'discord.js';
 import dotenv from 'dotenv';
 import cron from 'node-cron';
+import fs from 'fs';
 
 dotenv.config();
+
+const DATA_FILE = 'characters.json';
+
+// Load environment variables based on the developer mode
+const isDeveloperMode = process.env.DEVELOPER_MODE === 'true';
+const DISCORD_TOKEN = isDeveloperMode ? process.env.DEV_DISCORD_TOKEN : process.env.PROD_DISCORD_TOKEN;
+const CLIENT_ID = isDeveloperMode ? process.env.DEV_CLIENT_ID : process.env.PROD_CLIENT_ID;
+const GUILD_ID = isDeveloperMode ? process.env.DEV_GUILD_ID : process.env.PROD_GUILD_ID;
+const ANNOUNCEMENT_CHANNEL_ID = isDeveloperMode ? process.env.DEV_ANNOUNCEMENT_CHANNEL_ID : process.env.PROD_ANNOUNCEMENT_CHANNEL_ID;
 
 const client = new Client({
     intents: [
@@ -22,10 +32,28 @@ const characters = new Map<string, {
     levelingZone?: string;
 }>();
 
-const ANNOUNCEMENT_CHANNEL_ID = '757642351089811486'; // Replace with your channel ID.
+// Load characters from the file
+function loadCharacters() {
+    if (fs.existsSync(DATA_FILE)) {
+        const data = fs.readFileSync(DATA_FILE, 'utf8');
+        const parsedData = JSON.parse(data);
+        for (const [key, value] of Object.entries(parsedData)) {
+            characters.set(key, value as { name: string; status: 'alive' | 'dead'; level: number; class: string; race: string; levelingZone?: string });
+        }
+    }
+}
+
+// Save characters to the file
+function saveCharacters() {
+    const data = JSON.stringify(Object.fromEntries(characters), null, 2);
+    fs.writeFileSync(DATA_FILE, data, 'utf8');
+}
 
 client.once(Events.ClientReady, () => {
     console.log(`Logged in as ${client.user?.tag}!`);
+
+    // Load characters from the file
+    loadCharacters();
 
     // Schedule daily summary at 9:00am
     cron.schedule('0 9 * * *', () => {
@@ -68,6 +96,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
                 if (characters.has(name)) {
                     await interaction.reply(`Character "${name}" already exists.`);
+                    deleteReplyAfterDelay(interaction);
                     return;
                 }
 
@@ -80,7 +109,10 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                     levelingZone,
                 });
 
+                saveCharacters();
+
                 await interaction.reply(`Character "${name}" created.`);
+                deleteReplyAfterDelay(interaction);
                 break;
 
             case 'edit':
@@ -91,12 +123,15 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 const char = characters.get(editName);
                 if (!char) {
                     await interaction.reply(`Character "${editName}" does not exist.`);
+                    deleteReplyAfterDelay(interaction);
                     return;
                 }
 
                 if (field in char) {
                     (char as any)[field] = field === 'level' ? parseInt(fieldValue, 10) : fieldValue;
                     characters.set(editName, char);
+
+                    saveCharacters();
 
                     await interaction.reply(`Character "${editName}" updated.`);
 
@@ -111,6 +146,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                     }
                 } else {
                     await interaction.reply(`Invalid field: ${field}`);
+                    deleteReplyAfterDelay(interaction);
                 }
                 break;
 
@@ -121,11 +157,14 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 const character = characters.get(levelUpName);
                 if (!character) {
                     await interaction.reply(`Character "${levelUpName}" does not exist.`);
+                    deleteReplyAfterDelay(interaction);
                     return;
                 }
 
                 character.level = Math.min(60, character.level + levelsToAdd);
                 characters.set(levelUpName, character);
+
+                saveCharacters();
 
                 await interaction.reply(`Character "${levelUpName}" is now level ${character.level}.`);
                 break;
@@ -136,11 +175,11 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
             default:
                 await interaction.reply(`Unknown command: ${commandName}`);
+                deleteReplyAfterDelay(interaction);
                 break;
         }
     } catch (error) {
         console.error(error);
-        await interaction.reply('There was an error while executing this command!');
     }
 }
 
@@ -157,7 +196,20 @@ async function sendDailySummary(interaction?: ChatInputCommandInteraction) {
 
     if (interaction) {
         await interaction.reply('Summary sent to the announcement channel.');
+        if (interaction.replied || interaction.deferred) {
+            deleteReplyAfterDelay(interaction);
+        }
     }
 }
 
-client.login(process.env.DISCORD_TOKEN);
+function deleteReplyAfterDelay(interaction: ChatInputCommandInteraction, delay: number = 5000) {
+    setTimeout(async () => {
+        try {
+            await interaction.deleteReply();
+        } catch (error) {
+            console.error('Failed to delete reply:', error);
+        }
+    }, delay);
+}
+
+client.login(DISCORD_TOKEN);

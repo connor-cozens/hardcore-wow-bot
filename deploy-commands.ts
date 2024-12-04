@@ -5,6 +5,12 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Load environment variables based on the developer mode
+const isDeveloperMode = process.env.DEVELOPER_MODE === 'true';
+const DISCORD_TOKEN = isDeveloperMode ? process.env.DEV_DISCORD_TOKEN : process.env.PROD_DISCORD_TOKEN;
+const CLIENT_ID = isDeveloperMode ? process.env.DEV_CLIENT_ID : process.env.PROD_CLIENT_ID;
+const GUILD_ID = isDeveloperMode ? process.env.DEV_GUILD_ID : process.env.PROD_GUILD_ID;
+
 const classes = [
     { name: 'Warrior', value: 'Warrior' },
     { name: 'Paladin', value: 'Paladin' },
@@ -107,14 +113,14 @@ const commands = [
                 .setMaxValue(60)),
 ].map(command => command.toJSON());
 
-const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN!);
+const rest = new REST({ version: '9' }).setToken(DISCORD_TOKEN!);
 
 (async () => {
     try {
         console.log('Started refreshing application (/) commands.');
 
         await rest.put(
-            Routes.applicationGuildCommands(process.env.CLIENT_ID!, process.env.GUILD_ID!),
+            Routes.applicationGuildCommands(CLIENT_ID!, GUILD_ID!),
             { body: commands },
         );
 
