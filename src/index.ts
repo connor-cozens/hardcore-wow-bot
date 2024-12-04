@@ -227,7 +227,8 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
 async function sendDailySummary(interaction?: ChatInputCommandInteraction) {
     const aliveCharacters = Array.from(characters.values()).filter(char => char.status === 'alive');
-    const summary = aliveCharacters.map(char => `${char.name} (Level ${char.level} ${char.race} ${char.class})`).join('\n');
+    const sortedCharacters = aliveCharacters.sort((a, b) => b.level - a.level);
+    const summary = sortedCharacters.map(char => `${char.name} (Level ${char.level} ${char.race} ${char.class})`).join('\n');
 
     const announcementChannel = client.channels.cache.get(ANNOUNCEMENT_CHANNEL_ID) as TextChannel;
     if (summary) {
