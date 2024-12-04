@@ -128,12 +128,23 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 }
 
                 if (field in char) {
-                    (char as any)[field] = field === 'level' ? parseInt(fieldValue, 10) : fieldValue;
+                    if (field === 'level') {
+                        const levelValue = parseInt(fieldValue, 10);
+                        if (isNaN(levelValue) || levelValue < 1 || levelValue > 60) {
+                            await interaction.reply('Invalid level value. Please enter a number between 1 and 60.');
+                            deleteReplyAfterDelay(interaction);
+                            return;
+                        }
+                        char.level = levelValue;
+                    } else {
+                        (char as any)[field] = fieldValue;
+                    }
                     characters.set(editName, char);
 
                     saveCharacters();
 
                     await interaction.reply(`Character "${editName}" updated.`);
+                    deleteReplyAfterDelay(interaction);
 
                     if (field === 'level' && char.level % 5 === 0) {
                         const announcementChannel = client.channels.cache.get(ANNOUNCEMENT_CHANNEL_ID) as TextChannel;
@@ -167,10 +178,12 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 saveCharacters();
 
                 await interaction.reply(`Character "${levelUpName}" is now level ${character.level}.`);
+                deleteReplyAfterDelay(interaction);
                 break;
 
             case 'summary':
                 await sendDailySummary(interaction);
+                deleteReplyAfterDelay(interaction);
                 break;
 
             default:
@@ -180,6 +193,10 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
         }
     } catch (error) {
         console.error(error);
+        if (!interaction.replied && !interaction.deferred) {
+            await interaction.reply('There was an error while executing this command!');
+            deleteReplyAfterDelay(interaction);
+        }
     }
 }
 
@@ -196,16 +213,15 @@ async function sendDailySummary(interaction?: ChatInputCommandInteraction) {
 
     if (interaction) {
         await interaction.reply('Summary sent to the announcement channel.');
-        if (interaction.replied || interaction.deferred) {
-            deleteReplyAfterDelay(interaction);
-        }
     }
 }
 
 function deleteReplyAfterDelay(interaction: ChatInputCommandInteraction, delay: number = 5000) {
     setTimeout(async () => {
         try {
-            await interaction.deleteReply();
+            if (interaction.replied || interaction.deferred) {
+                await interaction.deleteReply();
+            }
         } catch (error) {
             console.error('Failed to delete reply:', error);
         }

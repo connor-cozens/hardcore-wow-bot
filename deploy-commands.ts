@@ -55,7 +55,9 @@ const commands = [
         .addIntegerOption(option => 
             option.setName('level')
                 .setDescription('Character level')
-                .setRequired(true))
+                .setRequired(true)
+                .setMinValue(1)
+                .setMaxValue(60))
         .addStringOption(option => 
             option.setName('class')
                 .setDescription('Character class')
@@ -92,8 +94,7 @@ const commands = [
         .addStringOption(option => 
             option.setName('value')
                 .setDescription('New value')
-                .setRequired(true)
-                .addChoices(...statuses, ...classes, ...races)),
+                .setRequired(true)),
     new SlashCommandBuilder()
         .setName('summary')
         .setDescription('Get a summary of all characters that are still alive'),
