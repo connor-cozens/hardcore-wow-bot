@@ -22,7 +22,8 @@ const characters = new Map<string, {
     levelingZone: string;
 }>();
 
-const ANNOUNCEMENT_CHANNEL_ID = '877681811256410136'; // Replace with your channel ID.
+// const ANNOUNCEMENT_CHANNEL_ID = '877681811256410136'; // Replace with your channel ID.
+const ANNOUNCEMENT_CHANNEL_ID = '757642351089811486'; // Replace with your channel ID.
 
 client.once(Events.ClientReady, () => {
     console.log(`Logged in as ${client.user?.tag}!`);
