@@ -86,6 +86,11 @@ async function handleAutocomplete(interaction: AutocompleteInteraction) {
 
     if (focusedOption.name === 'name') {
         choices = Array.from(characters.keys());
+    } else if (focusedOption.name === 'class') {
+        const race = interaction.options.getString('race');
+        if (race && raceClassMap[race]) {
+            choices = raceClassMap[race];
+        }
     }
 
     const filtered = choices.filter(choice => choice.toLowerCase().startsWith(focusedOption.value.toLowerCase()));
@@ -100,8 +105,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
             case 'create':
                 const name = options.getString('name')!;
                 if (name.length > 20) {
-                    await interaction.reply('Character name must be 20 characters or less.');
-                    deleteReplyAfterDelay(interaction);
+                    await interaction.reply({ content: 'Character name must be 20 characters or less.', ephemeral: true });
                     return;
                 }
                 const status = options.getString('status')!;
@@ -111,14 +115,12 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 const levelingZone = options.getString('zone');
 
                 if (!raceClassMap[race].includes(charClass)) {
-                    await interaction.reply(`Invalid class for race ${race}.`);
-                    deleteReplyAfterDelay(interaction);
+                    await interaction.reply({ content: `Invalid class for race ${race}.`, ephemeral: true });
                     return;
                 }
 
                 if (characters.has(name)) {
-                    await interaction.reply(`Character "${name}" already exists.`);
-                    deleteReplyAfterDelay(interaction);
+                    await interaction.reply({ content: `Character "${name}" already exists.`, ephemeral: true });
                     return;
                 }
 
@@ -133,8 +135,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
                 saveCharacters();
 
-                await interaction.reply(`Character "${name}" created.`);
-                deleteReplyAfterDelay(interaction);
+                await interaction.reply({ content: `Character "${name}" created.`, ephemeral: true });
                 break;
 
             case 'edit':
@@ -143,15 +144,13 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 const fieldValue = options.getString('value')!;
 
                 if (field === 'name' && fieldValue.length > 20) {
-                    await interaction.reply('Character name must be 20 characters or less.');
-                    deleteReplyAfterDelay(interaction);
+                    await interaction.reply({ content: 'Character name must be 20 characters or less.', ephemeral: true });
                     return;
                 }
 
                 const char = characters.get(editName);
                 if (!char) {
-                    await interaction.reply(`Character "${editName}" does not exist.`);
-                    deleteReplyAfterDelay(interaction);
+                    await interaction.reply({ content: `Character "${editName}" does not exist.`, ephemeral: true });
                     return;
                 }
 
@@ -159,15 +158,13 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                     if (field === 'level') {
                         const levelValue = parseInt(fieldValue, 10);
                         if (isNaN(levelValue) || levelValue < 1 || levelValue > 60) {
-                            await interaction.reply('Invalid level value. Please enter a number between 1 and 60.');
-                            deleteReplyAfterDelay(interaction);
+                            await interaction.reply({ content: 'Invalid level value. Please enter a number between 1 and 60.', ephemeral: true });
                             return;
                         }
                         char.level = levelValue;
                     } else if (field === 'class') {
                         if (!raceClassMap[char.race].includes(fieldValue)) {
-                            await interaction.reply(`Invalid class for race ${char.race}.`);
-                            deleteReplyAfterDelay(interaction);
+                            await interaction.reply({ content: `Invalid class for race ${char.race}.`, ephemeral: true });
                             return;
                         }
                         char.class = fieldValue;
@@ -178,8 +175,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
                     saveCharacters();
 
-                    await interaction.reply(`Character "${editName}" updated.`);
-                    deleteReplyAfterDelay(interaction);
+                    await interaction.reply({ content: `Character "${editName}" updated.`, ephemeral: true });
 
                     if (field === 'level' && char.level % 5 === 0) {
                         const announcementChannel = client.channels.cache.get(ANNOUNCEMENT_CHANNEL_ID) as TextChannel;
@@ -191,8 +187,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                         announcementChannel.send(`⚰️ Character "${char.name}" has died.`);
                     }
                 } else {
-                    await interaction.reply(`Invalid field: ${field}`);
-                    deleteReplyAfterDelay(interaction);
+                    await interaction.reply({ content: `Invalid field: ${field}`, ephemeral: true });
                 }
                 break;
 
@@ -202,8 +197,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
                 const character = characters.get(levelUpName);
                 if (!character) {
-                    await interaction.reply(`Character "${levelUpName}" does not exist.`);
-                    deleteReplyAfterDelay(interaction);
+                    await interaction.reply({ content: `Character "${levelUpName}" does not exist.`, ephemeral: true });
                     return;
                 }
 
@@ -212,25 +206,21 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
                 saveCharacters();
 
-                await interaction.reply(`Character "${levelUpName}" is now level ${character.level}.`);
-                deleteReplyAfterDelay(interaction);
+                await interaction.reply({ content: `Character "${levelUpName}" is now level ${character.level}.`, ephemeral: true });
                 break;
 
             case 'summary':
                 await sendDailySummary(interaction);
-                deleteReplyAfterDelay(interaction);
                 break;
 
             default:
-                await interaction.reply(`Unknown command: ${commandName}`);
-                deleteReplyAfterDelay(interaction);
+                await interaction.reply({ content: `Unknown command: ${commandName}`, ephemeral: true });
                 break;
         }
     } catch (error) {
         console.error(error);
         if (!interaction.replied && !interaction.deferred) {
-            await interaction.reply('There was an error while executing this command!');
-            deleteReplyAfterDelay(interaction);
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
         }
     }
 }
@@ -247,20 +237,8 @@ async function sendDailySummary(interaction?: ChatInputCommandInteraction) {
     }
 
     if (interaction) {
-        await interaction.reply('Summary sent to the announcement channel.');
+        await interaction.reply({ content: 'Summary sent to the announcement channel.', ephemeral: true });
     }
-}
-
-function deleteReplyAfterDelay(interaction: ChatInputCommandInteraction, delay: number = 5000) {
-    setTimeout(async () => {
-        try {
-            if (interaction.replied || interaction.deferred) {
-                await interaction.deleteReply();
-            }
-        } catch (error) {
-            console.error('Failed to delete reply:', error);
-        }
-    }, delay);
 }
 
 client.login(DISCORD_TOKEN);
