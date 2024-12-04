@@ -1,0 +1,29 @@
+{
+  "name": "hardcore_discord_bot",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "build": "tsc",
+    "deploy-commands": "node --loader ts-node/esm deploy-commands.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@discordjs/rest": "^2.4.0",
+    "@types/node": "^22.10.1",
+    "discord-api-types": "^0.37.110",
+    "discord.js": "^14.0.0",
+    "dotenv": "^16.4.7",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^3.11.0",
+    "typescript": "^4.9.5"
+  }
+}
