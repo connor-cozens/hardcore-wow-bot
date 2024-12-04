@@ -22,6 +22,17 @@ const client = new Client({
     ],
 });
 
+const raceClassMap = {
+    'Human': ['Warrior', 'Paladin', 'Rogue', 'Priest', 'Mage', 'Warlock'],
+    'Dwarf': ['Warrior', 'Paladin', 'Hunter', 'Rogue', 'Priest'],
+    'Night Elf': ['Warrior', 'Hunter', 'Rogue', 'Priest', 'Druid'],
+    'Gnome': ['Warrior', 'Rogue', 'Mage', 'Warlock'],
+    'Orc': ['Warrior', 'Hunter', 'Rogue', 'Warlock', 'Shaman'],
+    'Tauren': ['Warrior', 'Hunter', 'Shaman', 'Druid'],
+    'Troll': ['Warrior', 'Hunter', 'Rogue', 'Priest', 'Mage', 'Shaman'],
+    'Undead': ['Warrior', 'Rogue', 'Priest', 'Mage', 'Warlock']
+};
+
 // A map to store characters by their names.
 const characters = new Map<string, {
     name: string;
@@ -88,11 +99,22 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
         switch (commandName) {
             case 'create':
                 const name = options.getString('name')!;
+                if (name.length > 20) {
+                    await interaction.reply('Character name must be 20 characters or less.');
+                    deleteReplyAfterDelay(interaction);
+                    return;
+                }
                 const status = options.getString('status')!;
                 const level = options.getInteger('level')!;
                 const charClass = options.getString('class')!;
                 const race = options.getString('race')!;
                 const levelingZone = options.getString('zone');
+
+                if (!raceClassMap[race].includes(charClass)) {
+                    await interaction.reply(`Invalid class for race ${race}.`);
+                    deleteReplyAfterDelay(interaction);
+                    return;
+                }
 
                 if (characters.has(name)) {
                     await interaction.reply(`Character "${name}" already exists.`);
@@ -120,6 +142,12 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 const field = options.getString('field')!;
                 const fieldValue = options.getString('value')!;
 
+                if (field === 'name' && fieldValue.length > 20) {
+                    await interaction.reply('Character name must be 20 characters or less.');
+                    deleteReplyAfterDelay(interaction);
+                    return;
+                }
+
                 const char = characters.get(editName);
                 if (!char) {
                     await interaction.reply(`Character "${editName}" does not exist.`);
@@ -136,6 +164,13 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                             return;
                         }
                         char.level = levelValue;
+                    } else if (field === 'class') {
+                        if (!raceClassMap[char.race].includes(fieldValue)) {
+                            await interaction.reply(`Invalid class for race ${char.race}.`);
+                            deleteReplyAfterDelay(interaction);
+                            return;
+                        }
+                        char.class = fieldValue;
                     } else {
                         (char as any)[field] = fieldValue;
                     }

@@ -11,28 +11,18 @@ const DISCORD_TOKEN = isDeveloperMode ? process.env.DEV_DISCORD_TOKEN : process.
 const CLIENT_ID = isDeveloperMode ? process.env.DEV_CLIENT_ID : process.env.PROD_CLIENT_ID;
 const GUILD_ID = isDeveloperMode ? process.env.DEV_GUILD_ID : process.env.PROD_GUILD_ID;
 
-const classes = [
-    { name: 'Warrior', value: 'Warrior' },
-    { name: 'Paladin', value: 'Paladin' },
-    { name: 'Hunter', value: 'Hunter' },
-    { name: 'Rogue', value: 'Rogue' },
-    { name: 'Priest', value: 'Priest' },
-    { name: 'Shaman', value: 'Shaman' },
-    { name: 'Mage', value: 'Mage' },
-    { name: 'Warlock', value: 'Warlock' },
-    { name: 'Druid', value: 'Druid' }
-];
+const raceClassMap = {
+    'Human': ['Warrior', 'Paladin', 'Rogue', 'Priest', 'Mage', 'Warlock'],
+    'Dwarf': ['Warrior', 'Paladin', 'Hunter', 'Rogue', 'Priest'],
+    'Night Elf': ['Warrior', 'Hunter', 'Rogue', 'Priest', 'Druid'],
+    'Gnome': ['Warrior', 'Rogue', 'Mage', 'Warlock'],
+    'Orc': ['Warrior', 'Hunter', 'Rogue', 'Warlock', 'Shaman'],
+    'Tauren': ['Warrior', 'Hunter', 'Shaman', 'Druid'],
+    'Troll': ['Warrior', 'Hunter', 'Rogue', 'Priest', 'Mage', 'Shaman'],
+    'Undead': ['Warrior', 'Rogue', 'Priest', 'Mage', 'Warlock']
+};
 
-const races = [
-    { name: 'Human', value: 'Human' },
-    { name: 'Dwarf', value: 'Dwarf' },
-    { name: 'Night Elf', value: 'Night Elf' },
-    { name: 'Gnome', value: 'Gnome' },
-    { name: 'Orc', value: 'Orc' },
-    { name: 'Undead', value: 'Undead' },
-    { name: 'Tauren', value: 'Tauren' },
-    { name: 'Troll', value: 'Troll' }
-];
+const races = Object.keys(raceClassMap).map(race => ({ name: race, value: race }));
 
 const statuses = [
     { name: 'alive', value: 'alive' },
@@ -46,7 +36,8 @@ const commands = [
         .addStringOption(option => 
             option.setName('name')
                 .setDescription('Character name')
-                .setRequired(true))
+                .setRequired(true)
+                .setMaxLength(20))
         .addStringOption(option => 
             option.setName('status')
                 .setDescription('Character status')
@@ -59,15 +50,14 @@ const commands = [
                 .setMinValue(1)
                 .setMaxValue(60))
         .addStringOption(option => 
-            option.setName('class')
-                .setDescription('Character class')
-                .setRequired(true)
-                .addChoices(...classes))
-        .addStringOption(option => 
             option.setName('race')
                 .setDescription('Character race')
                 .setRequired(true)
                 .addChoices(...races))
+        .addStringOption(option => 
+            option.setName('class')
+                .setDescription('Character class')
+                .setRequired(true))
         .addStringOption(option => 
             option.setName('zone')
                 .setDescription('Leveling zone')
