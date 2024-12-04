@@ -101,6 +101,14 @@ const commands = [
                 .setRequired(true)
                 .setMinValue(1)
                 .setMaxValue(60)),
+    new SlashCommandBuilder()
+        .setName('kill')
+        .setDescription('Set a character\'s status to dead')
+        .addStringOption(option => 
+            option.setName('name')
+                .setDescription('Character name')
+                .setRequired(true)
+                .setAutocomplete(true)),
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '9' }).setToken(DISCORD_TOKEN!);

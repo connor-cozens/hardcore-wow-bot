@@ -209,6 +209,31 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 await interaction.reply({ content: `Character "${levelUpName}" is now level ${character.level}.`, ephemeral: true });
                 break;
 
+            case 'kill':
+                const killName = options.getString('name')!;
+
+                const killCharacter = characters.get(killName);
+                if (!killCharacter) {
+                    await interaction.reply({ content: `Character "${killName}" does not exist.`, ephemeral: true });
+                    return;
+                }
+
+                if (killCharacter.status === 'dead') {
+                    await interaction.reply({ content: `Character "${killName}" is already dead.`, ephemeral: true });
+                    return;
+                }
+
+                killCharacter.status = 'dead';
+                characters.set(killName, killCharacter);
+
+                saveCharacters();
+
+                await interaction.reply({ content: `Character "${killName}" has been set to dead.`, ephemeral: true });
+
+                const announcementChannel = client.channels.cache.get(ANNOUNCEMENT_CHANNEL_ID) as TextChannel;
+                announcementChannel.send(`⚰️ Character "${killCharacter.name}" has died.`);
+                break;
+
             case 'summary':
                 await sendDailySummary(interaction);
                 break;
