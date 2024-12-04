@@ -28,6 +28,11 @@ const races = [
     { name: 'Troll', value: 'Troll' }
 ];
 
+const statuses = [
+    { name: 'alive', value: 'alive' },
+    { name: 'dead', value: 'dead' }
+];
+
 const commands = [
     new SlashCommandBuilder()
         .setName('create')
@@ -40,10 +45,7 @@ const commands = [
             option.setName('status')
                 .setDescription('Character status')
                 .setRequired(true)
-                .addChoices(
-                    { name: 'alive', value: 'alive' },
-                    { name: 'dead', value: 'dead' }
-                ))
+                .addChoices(...statuses))
         .addIntegerOption(option => 
             option.setName('level')
                 .setDescription('Character level')
@@ -61,7 +63,7 @@ const commands = [
         .addStringOption(option => 
             option.setName('zone')
                 .setDescription('Leveling zone')
-                .setRequired(true)),
+                .setRequired(false)),
     new SlashCommandBuilder()
         .setName('edit')
         .setDescription('Edit an existing character')
@@ -84,10 +86,25 @@ const commands = [
         .addStringOption(option => 
             option.setName('value')
                 .setDescription('New value')
-                .setRequired(true)),
+                .setRequired(true)
+                .addChoices(...statuses, ...classes, ...races)),
     new SlashCommandBuilder()
         .setName('summary')
         .setDescription('Get a summary of all characters that are still alive'),
+    new SlashCommandBuilder()
+        .setName('levelup')
+        .setDescription('Increase a character\'s level')
+        .addStringOption(option => 
+            option.setName('name')
+                .setDescription('Character name')
+                .setRequired(true)
+                .setAutocomplete(true))
+        .addIntegerOption(option => 
+            option.setName('levels')
+                .setDescription('Number of levels to increase')
+                .setRequired(true)
+                .setMinValue(1)
+                .setMaxValue(60)),
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN!);

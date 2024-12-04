@@ -19,10 +19,9 @@ const characters = new Map<string, {
     level: number;
     class: string;
     race: string;
-    levelingZone: string;
+    levelingZone?: string;
 }>();
 
-// const ANNOUNCEMENT_CHANNEL_ID = '877681811256410136'; // Replace with your channel ID.
 const ANNOUNCEMENT_CHANNEL_ID = '757642351089811486'; // Replace with your channel ID.
 
 client.once(Events.ClientReady, () => {
@@ -65,7 +64,7 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 const level = options.getInteger('level')!;
                 const charClass = options.getString('class')!;
                 const race = options.getString('race')!;
-                const levelingZone = options.getString('zone')!;
+                const levelingZone = options.getString('zone');
 
                 if (characters.has(name)) {
                     await interaction.reply(`Character "${name}" already exists.`);
@@ -113,6 +112,22 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 } else {
                     await interaction.reply(`Invalid field: ${field}`);
                 }
+                break;
+
+            case 'levelup':
+                const levelUpName = options.getString('name')!;
+                const levelsToAdd = options.getInteger('levels')!;
+
+                const character = characters.get(levelUpName);
+                if (!character) {
+                    await interaction.reply(`Character "${levelUpName}" does not exist.`);
+                    return;
+                }
+
+                character.level = Math.min(60, character.level + levelsToAdd);
+                characters.set(levelUpName, character);
+
+                await interaction.reply(`Character "${levelUpName}" is now level ${character.level}.`);
                 break;
 
             case 'summary':
