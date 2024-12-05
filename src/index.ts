@@ -189,9 +189,14 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
                     await interaction.reply({ content: `Character "${editName}" updated.`, ephemeral: true });
 
-                    if (field === 'level' && char.level % 5 === 0) {
+                    if (field === 'level') {
+                        const levelsToAdd = char.level - (char.level % 5);
                         const announcementChannel = client.channels.cache.get(ANNOUNCEMENT_CHANNEL_ID) as TextChannel;
-                        announcementChannel.send(`🎉 Character "${char.name}" has reached level ${char.level}!`);
+                        for (let lvl = char.level - (char.level % 5); lvl <= char.level; lvl += 5) {
+                            if (lvl > char.level - levelsToAdd) {
+                                announcementChannel.send(`🎉 Character "${char.name}" has reached level ${lvl}!`);
+                            }
+                        }
                     }
 
                     if (field === 'status' && char.status === 'dead') {
@@ -213,12 +218,20 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                     return;
                 }
 
+                const oldLevel = character.level;
                 character.level = Math.min(60, character.level + levelsToAdd);
                 characters.set(levelUpName, character);
 
                 saveCharacters();
 
                 await interaction.reply({ content: `Character "${levelUpName}" is now level ${character.level}.`, ephemeral: true });
+
+                const announcementChannel = client.channels.cache.get(ANNOUNCEMENT_CHANNEL_ID) as TextChannel;
+                for (let lvl = oldLevel + 1; lvl <= character.level; lvl++) {
+                    if (lvl % 5 === 0) {
+                        announcementChannel.send(`🎉 Character "${character.name}" has reached level ${lvl}!`);
+                    }
+                }
                 break;
 
             case 'kill':
@@ -242,8 +255,8 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
 
                 await interaction.reply({ content: `Character "${killName}" has been set to dead.`, ephemeral: true });
 
-                const announcementChannel = client.channels.cache.get(ANNOUNCEMENT_CHANNEL_ID) as TextChannel;
-                announcementChannel.send(`⚰️ Character "${killCharacter.name}" has died.`);
+                const announcementChannelKill = client.channels.cache.get(ANNOUNCEMENT_CHANNEL_ID) as TextChannel;
+                announcementChannelKill.send(`⚰️ Character "${killCharacter.name}" has died.`);
                 break;
 
             case 'summary':
