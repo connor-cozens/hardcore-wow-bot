@@ -73,9 +73,11 @@ client.once(Events.ClientReady, () => {
     // Load characters from the file
     loadCharacters();
 
-    // Schedule daily summary at 9:00am
-    cron.schedule('0 9 * * *', () => {
+    // Schedule summary every 3 days at 10:00am EST
+    cron.schedule('0 10 */3 * *', () => {
         sendDailySummary();
+    }, {
+        timezone: 'America/New_York'
     });
 });
 
