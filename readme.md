@@ -101,7 +101,7 @@ You can view the logs of your bot using the following command:
     /kill name:<name>
     ```
 
-**Show a list of all current characters**
+## Show a list of all alive characters
     ```
     /list
     ```
