@@ -44,34 +44,39 @@ This is a Discord bot for managing characters in a Hardcore WoW server. The bot 
 
 # Commands
 ## Deploy Commands
-To deploy the bot's commands to Discord, run the following command:
+### To deploy the bot's commands to Discord, run the following command:
 
-    ```bash
-    npm run deploy-commands
-    ```
+```bash
+npm run deploy-commands
+```
 
-## Start the Bot Locally
-    ```bash
-    npm start
-    ```
+### To start the Bot Locally
 
-## Using `pm2` to Keep the Bot Running
+```bash
+npm start
+```
+
+### Using `pm2` to Keep the Bot Running
 1. Install `pm2` globally:
     ```bash
     sudo npm install -g pm2
     ```
+    
 2. Start the bot with `pm2`
     ```bash
     pm2 start dist/index.js --name "discord-bot"
     ```
+    
 3. Save the process list:
     ```bash
     pm2 save
     ```
+    
 4. Set `pm2` to start on boot:
     ```bash
     sudo pm2 startup
     ```
+    
 5. Follow the instructions provided by the `pm2` startup command to complete the setup.
 
 ## Logs
@@ -82,34 +87,34 @@ You can view the logs of your bot using the following command:
 
 ## Bot Commands
 **Create a Character**
-    ```
-    /create name:<name> status:<status> level:<level> class:<class> race:<race> [zone:<zone>]
-    ```
+```
+/create name:<name> status:<status> level:<level> class:<class> race:<race> [zone:<zone>]
+```
 
 **Edit a Character**
-    ```
-    /edit name:<name> field:<field> value:<value>
-    ```
+```
+/edit name:<name> field:<field> value:<value>
+```
 
 **Level a Character Up**
-    ```
-    /levelup name:<name> levels:<levels>
-    ```
+```
+/levelup name:<name> levels:<levels>
+```
 
 **Kill a Character**
-    ```
-    /kill name:<name>
-    ```
+```
+/kill name:<name>
+```
 
 ## Show a list of all alive characters
-    ```
-    /list
-    ```
+```
+/list
+```
 
 **Post Daily Summary to Channel**
-    ```
-    /summary
-    ```
+```
+/summmary
+```
 
 ## Error Logging
 Errors are logged to a file named error.log in the root directory. Check this file for details on any errors that occur.
@@ -122,6 +127,5 @@ Feel free to submit issues or pull requests if you find any bugs or have suggest
 
 # License
 This project is licensed under the MIT License.
-    ```
+
 This [README.md](http://_vscodecontentref_/2) file provides detailed instructions on how to set up, test, deploy, and update the bot, as well as the commands to use and how to keep the bot running using `pm2`.
-```
