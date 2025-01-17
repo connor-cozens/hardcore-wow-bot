@@ -84,9 +84,9 @@ npm start
 
 ## Logs
 You can view the logs of your bot using the following command:
-    ```bash
-    pm2 logs discord-bot
-    ```
+```bash
+pm2 logs discord-bot
+```
 
 ## Bot Commands
 **Create a Character**
