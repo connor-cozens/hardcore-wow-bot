@@ -263,6 +263,10 @@ async function handleCommand(interaction: ChatInputCommandInteraction) {
                 await sendDailySummary(interaction);
                 break;
 
+            case 'list':
+                await sendCharacterList(interaction);
+                break;
+
             default:
                 await interaction.reply({ content: `Unknown command: ${commandName}`, ephemeral: true });
                 break;
@@ -290,6 +294,18 @@ async function sendDailySummary(interaction?: ChatInputCommandInteraction) {
 
     if (interaction) {
         await interaction.reply({ content: 'Summary sent to the announcement channel.', ephemeral: true });
+    }
+}
+
+async function sendCharacterList(interaction: ChatInputCommandInteraction) {
+    const aliveCharacters = Array.from(characters.values()).filter(char => char.status === 'alive');
+    const sortedCharacters = aliveCharacters.sort((a, b) => b.level - a.level);
+    const summary = sortedCharacters.map(char => `${char.name} (Level ${char.level} ${char.race} ${char.class})`).join('\n');
+
+    if (summary) {
+        await interaction.reply({ content: `**List of Alive Characters:**\n${summary}`, ephemeral: true });
+    } else {
+        await interaction.reply({ content: `**List of Alive Characters:**\nNo characters are currently alive.`, ephemeral: true });
     }
 }
 

@@ -109,6 +109,9 @@ const commands = [
                 .setDescription('Character name')
                 .setRequired(true)
                 .setAutocomplete(true)),
+    new SlashCommandBuilder()
+        .setName('list')
+        .setDescription('List all current characters (Only to user.)'),
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '9' }).setToken(DISCORD_TOKEN!);
