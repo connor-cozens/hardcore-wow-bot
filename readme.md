@@ -45,13 +45,16 @@ This is a Discord bot for managing characters in a Hardcore WoW server. The bot 
 # Commands
 ## Deploy Commands
 ### To deploy the bot's commands to Discord, run the following command:
+First build the bot:
+```bash
+npm run build
+```
 
 ```bash
 npm run deploy-commands
 ```
 
 ### To start the Bot Locally
-
 ```bash
 npm start
 ```
