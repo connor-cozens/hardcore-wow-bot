@@ -134,7 +134,7 @@ You can view the logs of your bot using the following command:
 ## Bot Commands
 **Create a Character**
 ```
-/create name:<name> status:<status> level:<level> class:<class> race:<race> [zone:<zone>]
+/create name:<name> class:<class> race:<race> [zone:<zone>]
 ```
 
 **Edit a Character**
@@ -144,22 +144,37 @@ You can view the logs of your bot using the following command:
 
 **Level a Character Up**
 ```
-/levelup name:<name> levels:<levels>
+/levelup name:<name>
 ```
 
 **Kill a Character**
 ```
-/kill name:<name>
+/kill name:<name> reason:<reason>
 ```
 
-## Show a list of all alive characters
+**Show a list of all alive characters**
 ```
-/list
+/list [class:<class>] [race:<race>] [minlevel:<level>] [maxlevel:<level>]
 ```
 
 **Post Daily Summary to Channel**
 ```
-/summmary
+/summary
+```
+
+**Show Character Details**
+```
+/character name:<name>
+```
+
+**Show Death Log**
+```
+/deaths [class:<class>] [race:<race>] [minlevel:<level>] [maxlevel:<level>]
+```
+
+**Show Statistics**
+```
+/stats [class:<class>] [race:<race>]
 ```
 
 ## Error Logging
