@@ -2,6 +2,7 @@ import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import dotenv from 'dotenv';
+import { WoWRace, WoWClass, raceClassMap } from './src/models/raceClassMap.js';
 
 dotenv.config();
 
@@ -11,16 +12,11 @@ const DISCORD_TOKEN = isDeveloperMode ? process.env.DEV_DISCORD_TOKEN : process.
 const CLIENT_ID = isDeveloperMode ? process.env.DEV_CLIENT_ID : process.env.PROD_CLIENT_ID;
 const GUILD_ID = isDeveloperMode ? process.env.DEV_GUILD_ID : process.env.PROD_GUILD_ID;
 
-const races = [
-    { name: 'Human', value: 'Human' },
-    { name: 'Dwarf', value: 'Dwarf' },
-    { name: 'Night Elf', value: 'Night Elf' },
-    { name: 'Gnome', value: 'Gnome' },
-    { name: 'Orc', value: 'Orc' },
-    { name: 'Undead', value: 'Undead' },
-    { name: 'Tauren', value: 'Tauren' },
-    { name: 'Troll', value: 'Troll' }
-];
+// Convert race types to choices format
+const races = Object.keys(raceClassMap).map(race => ({
+    name: race,
+    value: race
+}));
 
 const statuses = [
     { name: 'alive', value: 'alive' },
@@ -29,24 +25,53 @@ const statuses = [
 
 const commands = [
     new SlashCommandBuilder()
-        .setName('create')
+        .setName('createdeadpool')
+        .setDescription('Create a new Deadpool competition')
+        .addStringOption(option => 
+            option.setName('name')
+                .setDescription('Name of the Deadpool')
+                .setRequired(true))
+        .addStringOption(option => 
+            option.setName('startdate')
+                .setDescription('Start date (YYYY-MM-DD)')
+                .setRequired(true))
+        .addStringOption(option => 
+            option.setName('enddate')
+                .setDescription('End date (YYYY-MM-DD)')
+                .setRequired(true))
+        .addStringOption(option => 
+            option.setName('prize')
+                .setDescription('Prize description')
+                .setRequired(false)),
+    new SlashCommandBuilder()
+        .setName('editdeadpool')
+        .setDescription('Edit an existing deadpool')
+        .addStringOption(option =>
+            option.setName('name')
+                .setDescription('Name of the deadpool to edit')
+                .setRequired(true)
+                .setAutocomplete(true))
+        .addStringOption(option =>
+            option.setName('description')
+                .setDescription('New description for the deadpool')
+                .setRequired(false))
+        .addIntegerOption(option =>
+            option.setName('prize')
+                .setDescription('New prize amount for the deadpool')
+                .setRequired(false)),
+    new SlashCommandBuilder()
+        .setName('createcharacter')
         .setDescription('Create a new character')
+        .addStringOption(option => 
+            option.setName('deadpool')
+                .setDescription('Select the Deadpool to join')
+                .setRequired(true)
+                .setAutocomplete(true))
         .addStringOption(option => 
             option.setName('name')
                 .setDescription('Character name')
                 .setRequired(true)
                 .setMaxLength(20))
-        .addStringOption(option => 
-            option.setName('status')
-                .setDescription('Character status')
-                .setRequired(true)
-                .addChoices(...statuses))
-        .addIntegerOption(option => 
-            option.setName('level')
-                .setDescription('Character level')
-                .setRequired(true)
-                .setMinValue(1)
-                .setMaxValue(60))
         .addStringOption(option => 
             option.setName('race')
                 .setDescription('Character race')
@@ -58,11 +83,22 @@ const commands = [
                 .setRequired(true)
                 .setAutocomplete(true))
         .addStringOption(option => 
+            option.setName('status')
+                .setDescription('Character status')
+                .addChoices(...statuses)
+                .setRequired(false))
+        .addIntegerOption(option => 
+            option.setName('level')
+                .setDescription('Character level')
+                .setMinValue(1)
+                .setMaxValue(60)
+                .setRequired(false))
+        .addStringOption(option => 
             option.setName('zone')
                 .setDescription('Leveling zone')
                 .setRequired(false)),
     new SlashCommandBuilder()
-        .setName('edit')
+        .setName('editcharacter')
         .setDescription('Edit an existing character')
         .addStringOption(option => 
             option.setName('name')

@@ -2,6 +2,49 @@
 
 This is a Discord bot for managing characters in a Hardcore WoW server. The bot allows users to create, edit, level up, and kill characters, as well as get a daily summary of alive characters.
 
+## Testing
+
+### Running Tests
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Environment Setup
+1. Create a `.env.test` file in the root directory:
+   ```env
+   DEVELOPER_MODE=true
+   DEV_DISCORD_TOKEN=test_token
+   DEV_CLIENT_ID=test_client_id
+   DEV_GUILD_ID=test_guild_id
+   DEV_ANNOUNCEMENT_CHANNEL_ID=test_channel_id
+   ```
+
+### Test Coverage Requirements
+- Minimum 80% coverage for:
+  - Branches
+  - Functions
+  - Lines
+  - Statements
+
+### Test Organization
+- Tests are located in `src/__tests__/`
+- Organized by feature/component:
+  - `commands/` - Discord command tests
+  - `models/` - Data model tests
+  - `services/` - Service layer tests
+  - `utils/` - Utility function tests
+
+### Writing Tests
+- Use Jest for testing
+- Mock external dependencies
+- Follow naming convention: `*.test.ts`
+- Include both success and error cases
+- Test edge cases and validation
+
 ## Prerequisites
 
 - Node.js (v14 or higher)

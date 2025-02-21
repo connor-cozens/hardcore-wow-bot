@@ -2,3 +2,6 @@ node_modules/
 .env
 characters.json
 dist/
+deadpools.json
+error.log
+coverage/
