@@ -37,7 +37,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
             if (alive.length > 0) {
                 summaryMessage += '**🌟 Active Characters:**\n';
                 alive.forEach(char => {
-                    summaryMessage += `• ${char.name} - Level ${char.level} ${char.race} ${char.class} (<@${char.discordUserId}>)\n`;
+                    summaryMessage += `• ${char.name} - Level ${char.level} ${char.race} ${char.class}\n`;
                 });
                 summaryMessage += '\n';
             }
@@ -45,7 +45,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
             if (dead.length > 0) {
                 summaryMessage += '**💀 Fallen Characters:**\n';
                 dead.forEach(char => {
-                    summaryMessage += `• ${char.name} - Level ${char.level} ${char.race} ${char.class} (<@${char.discordUserId}>)\n`;
+                    summaryMessage += `• ${char.name} - Level ${char.level} ${char.race} ${char.class}\n`;
                 });
                 summaryMessage += '\n';
             }
