@@ -22,6 +22,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         return;
     }
 
+    const ownedByUser = interaction.options.getUser('ownedby');
+    const discordUserId = ownedByUser ? ownedByUser.id : interaction.user.id;
+
     const status = interaction.options.getString('status') ?? 'alive';
     const level = interaction.options.getInteger('level') ?? 1;
     const charClass = interaction.options.getString('class', true) as WoWClass;
@@ -49,7 +52,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         race,
         levelingZone,
         deadpoolId,
-        discordUserId: interaction.user.id
+        discordUserId
     };
 
     setCharacter(name, character as ICharacter);

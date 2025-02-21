@@ -82,6 +82,10 @@ const commands = [
                 .setDescription('Character class')
                 .setRequired(true)
                 .setAutocomplete(true))
+        .addUserOption(option =>
+            option.setName('ownedby')
+                .setDescription('Discord user who owns this character')
+                .setRequired(false))
         .addStringOption(option => 
             option.setName('status')
                 .setDescription('Character status')
