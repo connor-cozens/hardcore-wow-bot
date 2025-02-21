@@ -58,5 +58,5 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     await interaction.reply({ content: `Character "${name}" created.`, ephemeral: true });
 
     const channel = interaction.client.channels.cache.get(config.discord.announcementChannelId!) as TextChannel;
-    announceCharacterUpdate(channel, character as ICharacter, 'was created');
+    announceCharacterUpdate(channel, character as ICharacter, 'been created');
 } 
