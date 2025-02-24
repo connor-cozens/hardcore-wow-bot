@@ -24,7 +24,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
             .sort((a, b) => b.level - a.level);
 
         if (userCharacters.length > 0) {
-            const endDate = deadpool.endDate.toLocaleDateString();
+            const endDate = new Date(deadpool.endDate).toLocaleDateString();
             listMessage += `### 🏆 ${deadpool.name} (Ends: ${endDate})\n`;
 
             const alive = userCharacters.filter(char => char.status === 'alive');
